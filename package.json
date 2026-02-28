@@ -10,14 +10,16 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
-    "hono": "^4.12.3"
+    "@hono/zod-openapi": "^1.2.2",
+    "hono": "^4.12.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1",
-    "typescript": "^5.8.3",
     "@antfu/eslint-config": "^7.6.1",
+    "@types/node": "^20.11.17",
     "eslint": "^10.0.2",
-    "eslint-plugin-format": "^2.0.1"
+    "eslint-plugin-format": "^2.0.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
   }
 }
