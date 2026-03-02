@@ -1,5 +1,9 @@
 import { pinoLogger } from "hono-pino";
+import pino from "pino";
+import pretty from "pino-pretty";
 
 export function pinoLoggerWrapper() {
-  return pinoLogger();
+  return pinoLogger({
+    pino: pino(pretty()),
+  });
 }
