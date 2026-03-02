@@ -5,5 +5,8 @@ import pretty from "pino-pretty";
 export function pinoLoggerWrapper() {
   return pinoLogger({
     pino: pino(pretty()),
+    http: {
+      reqId: () => crypto.randomUUID(),
+    },
   });
 }
