@@ -4,7 +4,9 @@ import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 import { pinoLoggerWrapper } from "@/middlewares/pino-logger.js";
 
 export default function createApp() {
-  const app = new OpenAPIHono<AppBindings>();
+  const app = new OpenAPIHono<AppBindings>({
+    strict: false,
+  });
 
   // Middlewares
   app.use(serveEmojiFavicon("📃"));
