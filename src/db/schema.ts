@@ -11,16 +11,29 @@ export const listingStatusEnum = pgEnum("listing_status", [
 ]);
 
 const timestamps = {
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().$onUpdate(() => new Date()).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 };
 
 export const listings = pgTable("listings", {
-  id: integer("id").generatedAlwaysAsIdentity().primaryKey(),
+  id: integer("id")
+    .generatedAlwaysAsIdentity()
+    .primaryKey(),
   s3ImageUrl: text("s3_image_url"),
-  name: varchar("name", { length: 255 }).notNull(),
-  qty: integer("qty").notNull().default(0),
-  unitPriceCents: integer("unit_price_cents").notNull(),
-  status: listingStatusEnum("status").notNull().default("created"),
+  name: varchar("name", { length: 255 })
+    .notNull(),
+  qty: integer("qty")
+    .notNull()
+    .default(0),
+  unitPriceCents: integer("unit_price_cents")
+    .notNull(),
+  status: listingStatusEnum("status")
+    .notNull()
+    .default("created"),
   ...timestamps,
 });
