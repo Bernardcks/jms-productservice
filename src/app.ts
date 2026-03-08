@@ -1,6 +1,6 @@
 import type { PinoLogger } from "hono-pino";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { notFound, onError } from "stoker/middlewares";
+import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 import { pinoLoggerWrapper } from "./middlewares/pino-logger.js";
 
 interface AppBindings {
@@ -11,6 +11,7 @@ interface AppBindings {
 
 const app = new OpenAPIHono<AppBindings>();
 
+app.use(serveEmojiFavicon("📃"));
 app.use(pinoLoggerWrapper());
 app.notFound(notFound);
 app.onError(onError);
