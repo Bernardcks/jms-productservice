@@ -52,6 +52,16 @@ export const getOne = createRoute({
       selectListingsSchema,
       "The requested listing",
     ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      z.object({
+        message: z.string(),
+      }).openapi({
+        example: {
+          message: "Not found",
+        },
+      }),
+      "Listing not found",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdParamsSchema),
       "Invalid id error",

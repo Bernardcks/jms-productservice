@@ -22,5 +22,10 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
       return operators.eq(fields.id, id);
     },
   });
+  if (!listing) {
+    return c.json({
+      message: "Not found",
+    }, HttpStatusCodes.NOT_FOUND);
+  }
   return c.json(listing, HttpStatusCodes.OK);
 };
