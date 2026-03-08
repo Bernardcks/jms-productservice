@@ -11,5 +11,8 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     },
   });
 
-  app.get("/reference", Scalar({ url: "/doc" }));
+  app.get("/reference", Scalar({
+    url: "/doc",
+    theme: "deepSpace",
+  }));
 }
