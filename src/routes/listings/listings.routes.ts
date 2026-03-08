@@ -3,6 +3,7 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 import { insertListingsSchema, selectListingsSchema } from "@/db/schema";
+import { notFoundSchema } from "@/lib/constants";
 
 const tags = ["Listings"];
 
@@ -53,13 +54,7 @@ export const getOne = createRoute({
       "The requested listing",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
-      z.object({
-        message: z.string(),
-      }).openapi({
-        example: {
-          message: "Not found",
-        },
-      }),
+      notFoundSchema,
       "Listing not found",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(

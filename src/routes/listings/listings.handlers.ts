@@ -1,6 +1,7 @@
 import type { CreateRoute, GetOneRoute, ListRoute } from "./listings.routes";
 import type { AppRouteHandler } from "@/lib/types";
 import * as HttpStatusCodes from "stoker/http-status-codes";
+import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import db from "@/db";
 import { listings } from "@/db/schema";
 
@@ -24,7 +25,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   });
   if (!listing) {
     return c.json({
-      message: "Not found",
+      message: HttpStatusPhrases.NOT_FOUND,
     }, HttpStatusCodes.NOT_FOUND);
   }
   return c.json(listing, HttpStatusCodes.OK);
