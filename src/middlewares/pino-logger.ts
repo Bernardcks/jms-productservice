@@ -6,7 +6,7 @@ import env from "@/env.js";
 export function pinoLoggerWrapper() {
   return pinoLogger({
     pino: pino({
-      level: env.LOG_LEVEL || "info",
+      level: env.LOG_LEVEL,
     }, env.NODE_ENV === "production" ? undefined : pretty()),
     http: {
       reqId: () => crypto.randomUUID(),
