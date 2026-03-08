@@ -6,11 +6,12 @@ import { createRouter } from "@/lib/create-app.js";
 
 // Flow for implementing routes
 // 1. Define contract
-// 2. Define implementation{
+// 2. Define implementation
 
 const router = createRouter()
   .openapi(
     createRoute({
+      tags: ["Index"],
       method: "get",
       path: "/",
       responses: {
