@@ -1,13 +1,7 @@
-import type { PinoLogger } from "hono-pino";
+import type { AppBindings } from "./types.js";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 import { pinoLoggerWrapper } from "@/middlewares/pino-logger.js";
-
-interface AppBindings {
-  Variables: {
-    logger: PinoLogger;
-  };
-}
 
 export default function createApp() {
   const app = new OpenAPIHono<AppBindings>();
