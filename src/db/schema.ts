@@ -1,4 +1,5 @@
 import { integer, pgEnum, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 // Normal status flow
 // created -> processed -> active -> sold_out/cancelled
@@ -39,3 +40,7 @@ export const listings = pgTable("listings", {
     .defaultNow(),
   ...timestamps,
 });
+
+export const selectListingsSchema = createSelectSchema(listings);
+
+export const insertListingsSchema = createInsertSchema(listings);

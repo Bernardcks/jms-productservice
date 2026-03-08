@@ -13,7 +13,6 @@ export const list = createRoute({
       z.array(z.object({
         listingID: z.int(),
         name: z.string(),
-        // S3ImageURL: z.url,
       })),
       "The list of listings",
     ),
