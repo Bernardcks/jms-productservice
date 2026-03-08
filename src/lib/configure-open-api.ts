@@ -15,5 +15,9 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     url: "/doc",
     theme: "deepSpace",
     layout: "classic",
+    defaultHttpClient: {
+      targetKey: "js",
+      clientKey: "fetch",
+    },
   }));
 }
