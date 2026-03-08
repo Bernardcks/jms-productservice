@@ -26,13 +26,10 @@ export const listings = pgTable("listings", {
     .generatedAlwaysAsIdentity()
     .primaryKey(),
   s3ImageUrl: text("s3_image_url"),
-  name: varchar("name", { length: 255 })
-    .notNull(),
+  name: varchar("name", { length: 255 }),
   qty: integer("qty")
-    .notNull()
     .default(0),
-  unitPriceCents: integer("unit_price_cents")
-    .notNull(),
+  unitPriceCents: integer("unit_price_cents"),
   status: listingStatusEnum("status")
     .notNull()
     .default("created"),
