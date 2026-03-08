@@ -13,5 +13,5 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     },
   });
 
-  app.get("/scalar", Scalar({ url: "/doc" }));
+  app.get("/reference", Scalar({ url: "/doc" }));
 }
