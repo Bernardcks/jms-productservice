@@ -35,5 +35,7 @@ export const listings = pgTable("listings", {
   status: listingStatusEnum("status")
     .notNull()
     .default("created"),
+  bestBefore: timestamp("best_before", { withTimezone: true })
+    .defaultNow(),
   ...timestamps,
 });
