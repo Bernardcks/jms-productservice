@@ -43,4 +43,14 @@ export const listings = pgTable("listings", {
 
 export const selectListingsSchema = createSelectSchema(listings);
 
-export const insertListingsSchema = createInsertSchema(listings);
+export const insertListingsSchema = createInsertSchema(listings)
+  .required({ status: true })
+  .omit({
+    s3ImageUrl: true,
+    name: true,
+    qty: true,
+    unitPriceCents: true,
+    bestBefore: true,
+    createdAt: true,
+    updatedAt: true,
+  });
