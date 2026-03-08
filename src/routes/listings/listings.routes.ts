@@ -64,6 +64,30 @@ export const getOne = createRoute({
   },
 });
 
+export const patch = createRoute({
+  path: "/listings/{id}",
+  method: "patch",
+  request: {
+    params: IdParamsSchema,
+    body: jsonContentRequired(
+      insertListingsSchema,
+      "The listing updates",
+    ),
+  },
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      selectListingsSchema,
+      "The updated listing",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(insertListingsSchema)
+        .or(createErrorSchema(IdParamsSchema)),
+      "Validation error(s)",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
