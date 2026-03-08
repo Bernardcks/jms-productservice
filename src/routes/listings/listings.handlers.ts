@@ -1,5 +1,5 @@
-import type { ListRoute } from "./listings.routes.js";
-import type { AppRouteHandler } from "@/lib/types.js";
+import type { ListRoute } from "./listings.routes";
+import type { AppRouteHandler } from "@/lib/types";
 
 export const list: AppRouteHandler<ListRoute> = (c) => {
   return c.json([{

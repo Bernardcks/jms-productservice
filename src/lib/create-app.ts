@@ -1,8 +1,8 @@
-import type { AppBindings } from "./types.js";
+import type { AppBindings } from "./types";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 import { defaultHook } from "stoker/openapi";
-import { pinoLoggerWrapper } from "@/middlewares/pino-logger.js";
+import { pinoLoggerWrapper } from "@/middlewares/pino-logger";
 
 export function createRouter() {
   return new OpenAPIHono<AppBindings>({
