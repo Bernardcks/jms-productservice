@@ -1,4 +1,4 @@
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./listings.routes";
+import type { CreateRoute, GetByStatusRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./listings.routes";
 import type { AppRouteHandler } from "@/lib/types";
 import { eq } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
@@ -66,4 +66,22 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   }
 
   return c.body(null, HttpStatusCodes.NO_CONTENT);
+};
+
+export const getByStatus: AppRouteHandler<GetByStatusRoute> = async (c) => {
+  const { status } = c.req.valid("param");
+
+  const listings = await db.query.listings.findMany({
+    where(fields, operators) {
+      return operators.eq(fields.status, status);
+    },
+  });
+
+  if (listings.length === 0) {
+    return c.json({
+      message: HttpStatusPhrases.NOT_FOUND,
+    }, HttpStatusCodes.NOT_FOUND);
+  }
+
+  return c.json(listings, HttpStatusCodes.OK);
 };

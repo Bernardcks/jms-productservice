@@ -1,3 +1,4 @@
+import { z } from "@hono/zod-openapi";
 import { integer, pgEnum, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
@@ -10,6 +11,10 @@ export const listingStatusEnum = pgEnum("listing_status", [
   "cancelled", // Company cancels listing
   "sold_out", // Qty reaches 0
 ]);
+
+export const listingStatusEnumSchema = z.object({
+  status: z.enum(listingStatusEnum.enumValues),
+});
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
