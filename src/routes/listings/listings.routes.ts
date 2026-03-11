@@ -70,14 +70,14 @@ export const patch = createRoute({
   request: {
     params: IdParamsSchema,
     body: jsonContentRequired(
-      insertListingsSchema,
+      patchListingsSchema,
       "The listing updates",
     ),
   },
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      patchListingsSchema,
+      selectListingsSchema,
       "The updated listing",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
