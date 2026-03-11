@@ -1,6 +1,6 @@
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, PurchaseRoute, RemoveRoute, RestockRoute } from "./listings.routes";
 import type { AppRouteHandler } from "@/lib/types";
-import { and, eq, gte, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import db from "@/db";
@@ -158,7 +158,12 @@ export const restock: AppRouteHandler<RestockRoute> = async (c) => {
         qty: sql`${listings.qty} + ${qty}`,
         updatedAt: new Date(),
       })
-      .where(eq(listings.id, id))
+      .where(
+        and(
+          eq(listings.id, id),
+          inArray(listings.status, ["active", "sold_out"]),
+        ),
+      )
       .returning();
 
     // No listing found
@@ -183,9 +188,23 @@ export const restock: AppRouteHandler<RestockRoute> = async (c) => {
   });
 
   if (!restockedListing) {
+    // TODO: refactor here, move logic to listing.service.ts
+    // Same as get one handler code
+    const existingListing = await db.query.listings.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.id, id);
+      },
+    });
+
+    if (!existingListing) {
+      return c.json({
+        message: HttpStatusPhrases.NOT_FOUND,
+      }, HttpStatusCodes.NOT_FOUND);
+    }
+
     return c.json({
-      message: HttpStatusPhrases.NOT_FOUND,
-    }, HttpStatusCodes.NOT_FOUND);
+      message: "Listing is neither active nor sold_out",
+    }, HttpStatusCodes.CONFLICT);
   }
 
   return c.json(restockedListing, HttpStatusCodes.OK);

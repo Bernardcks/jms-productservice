@@ -182,6 +182,10 @@ export const restock = createRoute({
       notFoundSchema,
       "Listing not found",
     ),
+    [HttpStatusCodes.CONFLICT]: jsonContent(
+      conflictSchema,
+      "Listing is neither active nor sold_out",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf(
       [
         createErrorSchema(purchaseListingsSchema),
