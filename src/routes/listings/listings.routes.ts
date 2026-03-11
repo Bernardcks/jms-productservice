@@ -138,7 +138,7 @@ export const purchase = createRoute({
     ),
     [HttpStatusCodes.CONFLICT]: jsonContent(
       conflictSchema,
-      "Listing not found",
+      "Listing does not have enough quantity or not active",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf(
       [
