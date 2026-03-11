@@ -60,3 +60,7 @@ export const insertListingsSchema = createInsertSchema(listings)
   });
 
 export const patchListingsSchema = insertListingsSchema.partial();
+
+export const purchaseListingsSchema = z.object({
+  qty: z.coerce.number().int().positive(),
+});

@@ -1,6 +1,6 @@
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./listings.routes";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, PurchaseRoute, RemoveRoute } from "./listings.routes";
 import type { AppRouteHandler } from "@/lib/types";
-import { eq } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import db from "@/db";
@@ -66,4 +66,71 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   }
 
   return c.body(null, HttpStatusCodes.NO_CONTENT);
+};
+
+export const purchase: AppRouteHandler<PurchaseRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+  const { qty } = c.req.valid("json");
+
+  // Start db transaction
+  const purchasedListing = await db.transaction(async (tx) => {
+    // Try update
+    const [updated] = await tx.update(listings)
+      .set({
+        qty: sql`${listings.qty} - ${qty}`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(listings.id, id),
+          eq(listings.status, "active"),
+          gte(listings.qty, qty),
+        ),
+      )
+      .returning();
+
+    // No updates or not enough qty
+    if (!updated) {
+      return null;
+    }
+
+    // After update and no more qty
+    // Set status to sold out
+    if (updated.qty === 0) {
+      const [soldOutListing] = await tx.update(listings)
+        .set({
+          status: "sold_out",
+          updatedAt: new Date(),
+        })
+        .where(eq(listings.id, id))
+        .returning();
+
+      return soldOutListing;
+    }
+
+    return updated;
+  });
+
+  // If nothing updated
+  if (!purchasedListing) {
+    // TODO: refactor here, move logic to listing.service.ts
+    // Same as get one handler code
+    const existingListing = await db.query.listings.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.id, id);
+      },
+    });
+
+    if (!existingListing) {
+      return c.json({
+        message: HttpStatusPhrases.NOT_FOUND,
+      }, HttpStatusCodes.NOT_FOUND);
+    }
+
+    return c.json({
+      message: "Listing does not have enough quantity or not active",
+    }, HttpStatusCodes.CONFLICT);
+  }
+
+  return c.json(purchasedListing, HttpStatusCodes.OK);
 };
