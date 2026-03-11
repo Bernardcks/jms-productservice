@@ -32,7 +32,7 @@ export const listings = pgTable("listings", {
     .primaryKey(),
   s3ImageUrl: text("s3_image_url"),
   name: varchar("name", { length: 255 }),
-  description: varchar("name", { length: 255 }),
+  description: text("description"),
   qty: integer("qty")
     .default(0),
   unitPriceCents: integer("unit_price_cents"),
