@@ -1,10 +1,10 @@
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, PurchaseRoute, RemoveRoute, RestockRoute } from "./listings.routes";
+import type { CancelRoute, CreateRoute, GetOneRoute, ListRoute, PatchRoute, PurchaseRoute, RemoveRoute, RestockRoute } from "./listings.routes";
 import type { AppRouteHandler } from "@/lib/types";
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import db from "@/db";
-import { listings } from "@/db/schema";
+import { listings, selectListingsSchema } from "@/db/schema";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const { status } = c.req.valid("query");
@@ -208,4 +208,24 @@ export const restock: AppRouteHandler<RestockRoute> = async (c) => {
   }
 
   return c.json(restockedListing, HttpStatusCodes.OK);
+};
+
+export const cancel: AppRouteHandler<CancelRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+
+  const [cancelledListing] = await db.update(listings)
+    .set({
+      status: "cancelled",
+      updatedAt: new Date(),
+    })
+    .where(eq(listings.id, id))
+    .returning();
+
+  if (!cancelledListing) {
+    return c.json({
+      message: HttpStatusPhrases.NOT_FOUND,
+    }, HttpStatusCodes.NOT_FOUND);
+  }
+
+  return c.json(cancelledListing, HttpStatusCodes.OK);
 };

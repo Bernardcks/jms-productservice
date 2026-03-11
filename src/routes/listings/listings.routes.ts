@@ -196,6 +196,29 @@ export const restock = createRoute({
   },
 });
 
+export const cancel = createRoute({
+  path: "/listings/{id}/cancel",
+  method: "post",
+  request: {
+    params: IdParamsSchema,
+  },
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      selectListingsSchema,
+      "The cancelled listing",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Listing not found",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(IdParamsSchema),
+      "Invalid id error",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
@@ -203,3 +226,4 @@ export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
 export type PurchaseRoute = typeof purchase;
 export type RestockRoute = typeof restock;
+export type CancelRoute = typeof cancel;
