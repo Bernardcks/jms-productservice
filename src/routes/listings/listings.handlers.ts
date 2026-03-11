@@ -1,4 +1,4 @@
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, PurchaseRoute, RemoveRoute } from "./listings.routes";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, PurchaseRoute, RemoveRoute, RestockRoute } from "./listings.routes";
 import type { AppRouteHandler } from "@/lib/types";
 import { and, eq, gte, sql } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
@@ -144,4 +144,49 @@ export const purchase: AppRouteHandler<PurchaseRoute> = async (c) => {
   }
 
   return c.json(purchasedListing, HttpStatusCodes.OK);
+};
+
+export const restock: AppRouteHandler<RestockRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+  const { qty } = c.req.valid("json");
+
+  // Start db transaction
+  const restockedListing = await db.transaction(async (tx) => {
+    // Try update
+    const [updated] = await tx.update(listings)
+      .set({
+        qty: sql`${listings.qty} + ${qty}`,
+        updatedAt: new Date(),
+      })
+      .where(eq(listings.id, id))
+      .returning();
+
+    // No listing found
+    if (!updated) {
+      return null;
+    }
+
+    // Check if trying to restock to sold_out listing
+    if (updated.status === "sold_out") {
+      const [addedToListing] = await tx.update(listings)
+        .set({
+          status: "active",
+          updatedAt: new Date(),
+        })
+        .where(eq(listings.id, id))
+        .returning();
+
+      return addedToListing;
+    }
+
+    return updated;
+  });
+
+  if (!restockedListing) {
+    return c.json({
+      message: HttpStatusPhrases.NOT_FOUND,
+    }, HttpStatusCodes.NOT_FOUND);
+  }
+
+  return c.json(restockedListing, HttpStatusCodes.OK);
 };

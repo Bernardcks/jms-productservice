@@ -162,9 +162,40 @@ export const purchase = createRoute({
   },
 });
 
+export const restock = createRoute({
+  path: "/listings/{id}/restock",
+  method: "post",
+  request: {
+    params: IdParamsSchema,
+    body: jsonContentRequired(
+      purchaseListingsSchema,
+      "The quantity to restock",
+    ),
+  },
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      selectListingsSchema,
+      "The updated listing",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Listing not found",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf(
+      [
+        createErrorSchema(purchaseListingsSchema),
+        createErrorSchema(IdParamsSchema),
+      ],
+      "Validation error(s)",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
 export type PurchaseRoute = typeof purchase;
+export type RestockRoute = typeof restock;
