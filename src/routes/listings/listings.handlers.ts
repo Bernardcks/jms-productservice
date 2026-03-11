@@ -7,8 +7,19 @@ import db from "@/db";
 import { listings } from "@/db/schema";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const listings = await db.query.listings.findMany();
-  return c.json(listings);
+  const { status } = c.req.valid("query");
+
+  const filters = [];
+
+  if (status) {
+    filters.push(eq(listings.status, status));
+  }
+
+  const res = await db.select()
+    .from(listings)
+    .where(filters.length ? and(...filters) : undefined);
+
+  return c.json(res, HttpStatusCodes.OK);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {

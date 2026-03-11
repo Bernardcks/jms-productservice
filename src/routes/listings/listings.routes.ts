@@ -2,19 +2,31 @@ import { createRoute, z } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
-import { insertListingsSchema, patchListingsSchema, purchaseListingsSchema, selectListingsSchema } from "@/db/schema";
+import { insertListingsSchema, listingStatusEnum, patchListingsSchema, purchaseListingsSchema, selectListingsSchema } from "@/db/schema";
 import { conflictSchema, notFoundSchema } from "@/lib/constants";
 
 const tags = ["Listings"];
+
+// Query schema for list listings
+export const listListingsQuerySchema = z.object({
+  status: z.enum(listingStatusEnum.enumValues).optional(),
+});
 
 export const list = createRoute({
   path: "/listings",
   method: "get",
   tags,
+  request: {
+    query: listListingsQuerySchema,
+  },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       z.array(selectListingsSchema),
-      "The list of listings",
+      "The list of (filtered) listings",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(insertListingsSchema),
+      "Validation error(s)",
     ),
   },
 });
