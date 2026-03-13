@@ -11,7 +11,16 @@ export const listingEventNameSchema = z.enum([
 
 export type ListingEventName = z.infer<typeof listingEventNameSchema>;
 
-export const listingSnapshotSchema = selectListingsSchema;
+const dateInputSchema = z.union([
+  z.date(),
+  z.iso.datetime().transform(value => new Date(value)),
+]);
+
+export const listingSnapshotSchema = selectListingsSchema.extend({
+  bestBefore: dateInputSchema.nullable(),
+  createdAt: dateInputSchema,
+  updatedAt: dateInputSchema,
+});
 
 export const listingEventSchema = z.object({
   eventId: z.uuid(),
