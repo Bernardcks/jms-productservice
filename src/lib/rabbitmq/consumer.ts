@@ -1,5 +1,6 @@
 import type { Channel, ConsumeMessage } from "amqplib";
 import { appLogger } from "@/middlewares/pino-logger";
+import { syncListingFromEvent } from "@/services/listings.service";
 import { rabbitConfig } from "./config";
 import { getRabbitConnection } from "./connection";
 import { listingEventSchema } from "./messages";
@@ -33,11 +34,22 @@ async function processMessage(channel: Channel, message: ConsumeMessage): Promis
       return;
     }
 
+    const syncedListing = await syncListingFromEvent(parsed.data.data);
+    if (!syncedListing) {
+      logger.warn({
+        eventId: parsed.data.eventId,
+        listingId: parsed.data.data.id,
+      }, "RabbitMQ event consumed, but listing was not found");
+      channel.ack(message);
+      return;
+    }
+
     logger.info({
       eventId: parsed.data.eventId,
       eventName: parsed.data.eventName,
-      listingId: parsed.data.data.id,
-    }, "RabbitMQ event consumed");
+      listingId: syncedListing.id,
+      status: syncedListing.status,
+    }, "RabbitMQ event consumed and listing synced");
 
     channel.ack(message);
   }
