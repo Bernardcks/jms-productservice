@@ -10,7 +10,7 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string(),
   LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("info"),
   RABBITMQ_URL: z.string().default("amqp://localhost:5672"),
-  RABBITMQ_ECHANGE: z.string().default("dev.events"),
+  RABBITMQ_EXCHANGE: z.string().default("dev.events"),
   RABBITMQ_QUEUE: z.string().default("dev.listings.events"),
   RABBITMQ_PREFETCH: z.coerce.number().int().positive().default(20),
 });
