@@ -20,6 +20,12 @@ export const insertListingBodySchema = listingOptionalFieldsSchema.extend({
   s3ImageUrl: z.url(),
 });
 
+export const patchListingBodySchema = insertListingBodySchema.partial();
+
+export const purchaseListingBodySchema = z.object({
+  qty: z.coerce.number().int().positive(),
+});
+
 export const uploadUrlRequestSchema = z.object({
   filename: z.string().min(1).max(255),
   contentType: z.string().min(1).max(120),

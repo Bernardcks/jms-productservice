@@ -2,7 +2,7 @@ import { createRoute } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
-import { patchListingsSchema, purchaseListingsSchema, selectListingsSchema } from "@/db/schema";
+import { selectListingsSchema } from "@/db/schema";
 import { conflictSchema, notFoundSchema } from "@/lib/constants";
 import {
   completeUploadsRequestSchema,
@@ -10,6 +10,8 @@ import {
   insertListingBodySchema,
   listListingsQuerySchema,
   listListingsResponseSchema,
+  patchListingBodySchema,
+  purchaseListingBodySchema,
   uploadUrlRequestSchema,
   uploadUrlResponseSchema,
   uploadUrlsRequestSchema,
@@ -154,7 +156,7 @@ export const patch = createRoute({
   request: {
     params: IdParamsSchema,
     body: jsonContentRequired(
-      patchListingsSchema,
+      patchListingBodySchema,
       "The listing updates",
     ),
   },
@@ -170,7 +172,7 @@ export const patch = createRoute({
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf(
       [
-        createErrorSchema(patchListingsSchema),
+        createErrorSchema(patchListingBodySchema),
         createErrorSchema(IdParamsSchema),
       ],
       "Validation error(s)",
@@ -206,7 +208,7 @@ export const purchase = createRoute({
   request: {
     params: IdParamsSchema,
     body: jsonContentRequired(
-      purchaseListingsSchema,
+      purchaseListingBodySchema,
       "The quantity to buy",
     ),
   },
@@ -226,7 +228,7 @@ export const purchase = createRoute({
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf(
       [
-        createErrorSchema(purchaseListingsSchema),
+        createErrorSchema(purchaseListingBodySchema),
         createErrorSchema(IdParamsSchema),
       ],
       "Validation error(s)",
@@ -240,7 +242,7 @@ export const restock = createRoute({
   request: {
     params: IdParamsSchema,
     body: jsonContentRequired(
-      purchaseListingsSchema,
+      purchaseListingBodySchema,
       "The quantity to restock",
     ),
   },
@@ -260,7 +262,7 @@ export const restock = createRoute({
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf(
       [
-        createErrorSchema(purchaseListingsSchema),
+        createErrorSchema(purchaseListingBodySchema),
         createErrorSchema(IdParamsSchema),
       ],
       "Validation error(s)",
