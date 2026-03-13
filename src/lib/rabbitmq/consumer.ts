@@ -69,7 +69,7 @@ export async function startListingConsumer(): Promise<void> {
 
   const { consumeChannel } = await getRabbitConnection();
   await ensureTopology(consumeChannel);
-  await consumeChannel.prefetch(rabbitConfig.prefetchL);
+  await consumeChannel.prefetch(rabbitConfig.prefetch);
 
   const result = await consumeChannel.consume(
     rabbitConfig.queue,
