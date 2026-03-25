@@ -16,9 +16,19 @@ export const listListingsQuerySchema = z.object({
 
 export const listListingsResponseSchema = z.array(selectListingsSchema);
 
-export const insertListingBodySchema = listingOptionalFieldsSchema;
+export const insertListingBodySchema = listingOptionalFieldsSchema.extend({
+  imageUrl: z.url(),
+});
 
-export const patchListingBodySchema = insertListingBodySchema.partial();
+export const batchCreateListingsRequestSchema = z.object({
+  items: z.array(insertListingBodySchema).min(1).max(50),
+});
+
+export const batchCreateListingsResponseSchema = z.array(selectListingsSchema);
+
+export const patchListingBodySchema = listingOptionalFieldsSchema.extend({
+  imageUrl: z.url().optional(),
+});
 
 export const purchaseListingBodySchema = z.object({
   qty: z.coerce.number().int().positive(),

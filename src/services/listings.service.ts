@@ -46,6 +46,12 @@ export async function createListing(listing: ListingInsert): Promise<ListingRow>
   return inserted;
 }
 
+export async function createListings(items: ListingInsert[]): Promise<ListingRow[]> {
+  return db.insert(listings)
+    .values(items)
+    .returning();
+}
+
 export async function getListingById(id: number): Promise<ListingRow | null> {
   const listing = await db.query.listings.findFirst({
     where(fields, operators) {

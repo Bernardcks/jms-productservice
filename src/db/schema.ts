@@ -30,6 +30,7 @@ export const listings = pgTable("listings", {
   id: integer("id")
     .generatedAlwaysAsIdentity()
     .primaryKey(),
+  imageUrl: text("s3_image_url"),
   name: varchar("name", { length: 255 }),
   description: text("description"),
   qty: integer("qty")

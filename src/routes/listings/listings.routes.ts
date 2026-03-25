@@ -5,7 +5,8 @@ import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 import { selectListingsSchema } from "@/db/schema";
 import { conflictSchema, notFoundSchema } from "@/lib/constants";
 import {
-  insertListingBodySchema,
+  batchCreateListingsRequestSchema,
+  batchCreateListingsResponseSchema,
   listListingsQuerySchema,
   listListingsResponseSchema,
   patchListingBodySchema,
@@ -38,18 +39,18 @@ export const create = createRoute({
   method: "post",
   request: {
     body: jsonContentRequired(
-      insertListingBodySchema,
-      "The listing to create",
+      batchCreateListingsRequestSchema,
+      "Batch of listings to create, each with a pre-uploaded image URL",
     ),
   },
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      selectListingsSchema,
-      "The created listing",
+      batchCreateListingsResponseSchema,
+      "The created listings",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(insertListingBodySchema),
+      createErrorSchema(batchCreateListingsRequestSchema),
       "Validation error(s)",
     ),
   },

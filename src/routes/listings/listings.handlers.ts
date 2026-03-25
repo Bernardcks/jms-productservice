@@ -26,20 +26,22 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
-  const listing = c.req.valid("json");
-  const inserted = await listingService.createListing(listing);
+  const { items } = c.req.valid("json");
+  const inserted = await listingService.createListings(items);
 
-  const event = createListingEvent({
-    eventName: "listing.uploaded",
-    data: inserted,
-  });
-  const published = await publishListingEvent(event);
+  for (const listing of inserted) {
+    const event = createListingEvent({
+      eventName: "listing.uploaded",
+      data: listing,
+    });
+    const published = await publishListingEvent(event);
 
-  if (!published) {
-    logger.warn({
-      listingId: inserted.id,
-      eventName: event.eventName,
-    }, "Listing created but event publish failed");
+    if (!published) {
+      logger.warn({
+        listingId: listing.id,
+        eventName: event.eventName,
+      }, "Listing created but event publish failed");
+    }
   }
 
   return c.json(inserted, HttpStatusCodes.OK);
