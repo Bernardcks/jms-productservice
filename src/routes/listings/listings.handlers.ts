@@ -1,6 +1,5 @@
 import type {
   CancelRoute,
-  CompleteUploadsRoute,
   CreateRoute,
   GetOneRoute,
   ListRoute,
@@ -8,8 +7,6 @@ import type {
   PurchaseRoute,
   RemoveRoute,
   RestockRoute,
-  UploadUrlRoute,
-  UploadUrlsRoute,
 } from "./listings.routes";
 import type { AppRouteHandler } from "@/lib/types";
 import * as HttpStatusCodes from "stoker/http-status-codes";
@@ -26,20 +23,6 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
   const res = await listingService.listListings(status);
 
   return c.json(res, HttpStatusCodes.OK);
-};
-
-export const uploadUrl: AppRouteHandler<UploadUrlRoute> = async (c) => {
-  const input = c.req.valid("json");
-  const payload = await listingService.createUploadUrl(input);
-
-  return c.json(payload, HttpStatusCodes.OK);
-};
-
-export const uploadUrls: AppRouteHandler<UploadUrlsRoute> = async (c) => {
-  const { items } = c.req.valid("json");
-  const payload = await listingService.createListingsWithUploadUrls(items);
-
-  return c.json({ items: payload }, HttpStatusCodes.OK);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
@@ -60,50 +43,6 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
   }
 
   return c.json(inserted, HttpStatusCodes.OK);
-};
-
-export const completeUploads: AppRouteHandler<CompleteUploadsRoute> = async (c) => {
-  const { listingIds } = c.req.valid("json");
-  const uniqueListingIds = [...new Set(listingIds)];
-
-  const existingListings = await listingService.getListingsByIds(uniqueListingIds);
-  const listingById = new Map(existingListings.map(listing => [listing.id, listing]));
-
-  const publishedIds: number[] = [];
-  const failedIds: number[] = [];
-  const notFoundIds: number[] = [];
-
-  for (const listingId of uniqueListingIds) {
-    const listing = listingById.get(listingId);
-    if (!listing) {
-      notFoundIds.push(listingId);
-      continue;
-    }
-
-    const event = createListingEvent({
-      eventName: "listing.uploaded",
-      data: listing,
-    });
-    const published = await publishListingEvent(event);
-
-    if (published) {
-      publishedIds.push(listingId);
-    }
-    else {
-      failedIds.push(listingId);
-      logger.warn({
-        listingId,
-        eventName: event.eventName,
-      }, "Listing upload completion confirmed but event publish failed");
-    }
-  }
-
-  return c.json({
-    requested: uniqueListingIds.length,
-    publishedIds,
-    failedIds,
-    notFoundIds,
-  }, HttpStatusCodes.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
