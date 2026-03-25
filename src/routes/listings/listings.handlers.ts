@@ -26,8 +26,10 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
-  const { items } = c.req.valid("json");
-  const inserted = await listingService.createListings(items);
+  const { imageUrls } = c.req.valid("json");
+  const inserted = await listingService.createListings(
+    imageUrls.map(imageUrl => ({ imageUrl })),
+  );
 
   for (const listing of inserted) {
     const event = createListingEvent({

@@ -16,15 +16,11 @@ export const listListingsQuerySchema = z.object({
 
 export const listListingsResponseSchema = z.array(selectListingsSchema);
 
-export const insertListingBodySchema = listingOptionalFieldsSchema.extend({
-  imageUrl: z.url(),
+export const createListingsRequestSchema = z.object({
+  imageUrls: z.array(z.url()).min(1).max(50),
 });
 
-export const batchCreateListingsRequestSchema = z.object({
-  items: z.array(insertListingBodySchema).min(1).max(50),
-});
-
-export const batchCreateListingsResponseSchema = z.array(selectListingsSchema);
+export const createListingsResponseSchema = z.array(selectListingsSchema);
 
 export const patchListingBodySchema = listingOptionalFieldsSchema.extend({
   imageUrl: z.url().optional(),
